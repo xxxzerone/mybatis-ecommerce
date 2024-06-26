@@ -3,6 +3,7 @@ package com.nc13.ecommerce.controller;
 import com.nc13.ecommerce.dto.UserDTO;
 import com.nc13.ecommerce.service.UserService;
 import jakarta.servlet.http.HttpSession;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -15,13 +16,10 @@ import java.util.Map;
 
 @Controller
 @RequestMapping("/users")
+@RequiredArgsConstructor
 public class UserController {
 
     private final UserService userService;
-
-    public UserController(UserService userService) {
-        this.userService = userService;
-    }
 
     @PostMapping("/auth")
     public String auth(UserDTO userDTO, HttpSession session) {
@@ -36,6 +34,11 @@ public class UserController {
     @GetMapping("/register")
     public String registerPage() {
         return "user/register";
+    }
+
+    @GetMapping("/seller/register")
+    public String sellerRegisterPage() {
+        return "user/sellerRegister";
     }
 
     @ResponseBody
@@ -55,8 +58,18 @@ public class UserController {
 
     @PostMapping("/register")
     public String register(UserDTO userDTO, RedirectAttributes redirectAttributes) {
-        int result = userService.insert(userDTO);
-        System.out.println("result = " + result);
+        int result = userService.insertBuyer(userDTO);
+        if (result != 1) {
+            redirectAttributes.addAttribute("message", "회원가입에 실패했습니다.");
+            return "redirect:/error-page";
+        }
+
+        return "redirect:/";
+    }
+
+    @PostMapping("/seller/register")
+    public String sellerRegister(UserDTO userDTO, RedirectAttributes redirectAttributes) {
+        int result = userService.insertSeller(userDTO);
         if (result != 1) {
             redirectAttributes.addAttribute("message", "회원가입에 실패했습니다.");
             return "redirect:/error-page";

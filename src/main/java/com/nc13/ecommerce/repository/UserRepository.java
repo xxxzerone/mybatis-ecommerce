@@ -19,5 +19,9 @@ public interface UserRepository {
 
     @Insert("insert into user(email, password, username, phone, address) " +
             "values(#{user.email}, #{user.password}, #{user.username}, #{user.phone}, #{user.address})")
-    int insert(@Param("user") UserDTO user);
+    int insertBuyer(@Param("user") UserDTO user);
+
+    @Insert("insert into user(email, password, user_type, username, phone, address) " +
+            "values(#{user.email}, #{user.password}, #{user.userType}, #{user.username}, #{user.phone}, #{user.address})")
+    int insertSeller(@Param("user") UserDTO user);
 }

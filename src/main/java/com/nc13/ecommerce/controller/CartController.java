@@ -2,6 +2,7 @@ package com.nc13.ecommerce.controller;
 
 import com.nc13.ecommerce.dto.CartDTO;
 import com.nc13.ecommerce.service.CartService;
+import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
@@ -14,15 +15,12 @@ import java.util.Map;
 
 @Controller
 @RequestMapping("/carts")
+@RequiredArgsConstructor
 public class CartController {
 
     private static final Logger log = LoggerFactory.getLogger(CartController.class);
 
     private final CartService cartService;
-
-    public CartController(CartService cartService) {
-        this.cartService = cartService;
-    }
 
     @ResponseBody
     @PostMapping("/{id}")

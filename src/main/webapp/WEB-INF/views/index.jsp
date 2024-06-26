@@ -31,7 +31,10 @@
           </div> 
           <div class="col-2 text-center">
             <a href="/users/register" class="btn btn-outline-secondary">회원가입</a>
-          </div> 
+          </div>
+          <div class="col-2 text-center">
+            <a href="/users/seller/register" class="btn btn-outline-secondary">판매자 회원가입</a>
+          </div>
         </div> 
       </form>
     </div>

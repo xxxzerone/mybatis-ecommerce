@@ -1,5 +1,6 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="jakarta.tags.core"%>
+<%@ taglib uri="jakarta.tags.functions" prefix="fn"%>
 <%@ taglib prefix="fmt" uri="jakarta.tags.fmt"%>
 <!DOCTYPE html>
 <html lang="en">
@@ -97,8 +98,13 @@
       </div>
       <div class="row justify-content-end">
         <div class="col-3">
-          <button type="button" class="btn btn-outline-primary" onclick="location.href='/board/write'">글 작성하기</button>
+          <button type="button" class="btn btn-outline-primary" onclick="location.href='/carts/${ logIn.id }'">장바구니</button>
         </div> 
+        <c:if test="${ fn:contains(logIn.userType, 'S') }">
+          <div class="col-3">
+            <button type="button" class="btn btn-outline-primary" onclick="location.href='/products/create'">글 작성하기</button>
+          </div> 
+        </c:if>
       </div>
     </div>
   </div>

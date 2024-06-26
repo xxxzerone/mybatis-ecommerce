@@ -4,6 +4,7 @@ import com.nc13.ecommerce.dto.PageableDTO;
 import com.nc13.ecommerce.dto.ProductDTO;
 import com.nc13.ecommerce.service.ProductService;
 import jakarta.servlet.http.HttpSession;
+import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
@@ -13,6 +14,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
@@ -21,15 +23,12 @@ import java.util.List;
 
 @Controller
 @RequestMapping("/products")
+@RequiredArgsConstructor
 public class ProductController {
 
     private static final Logger log = LoggerFactory.getLogger(ProductController.class);
 
     private final ProductService productService;
-
-    public ProductController(ProductService productService) {
-        this.productService = productService;
-    }
 
     @GetMapping
     public String productsPage(Model model, @PageableDefault(size = 5) Pageable pageable) {
@@ -72,5 +71,10 @@ public class ProductController {
         model.addAttribute("product", product);
 
         return "product/productDetail";
+    }
+
+    @GetMapping("/create")
+    public String createPage() {
+        return "product/create";
     }
 }

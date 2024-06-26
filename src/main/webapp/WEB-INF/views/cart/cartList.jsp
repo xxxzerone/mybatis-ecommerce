@@ -15,7 +15,7 @@
     i {
       cursor: pointer;
     }
-    #product-group {
+    #cart-group {
       cursor: pointer;
     } 
   </style>
@@ -23,7 +23,7 @@
 <body>
   <div class="container-fluid">
     <div class="main h-100">
-      <h1 class="text-center">장바구니 목록</h1>
+      <h1 class="text-center">${ logIn.username }님의 장바구니</h1>
 
       <div class="row justify-content-center">
         <div class="col-10 text-center">
@@ -36,7 +36,7 @@
             </tr> 
 
             <c:forEach var="cart" items="${ carts }" varStatus="status">
-              <tr id="product-group" onclick="javascript:location.href='/carts/${ cart.id }'">
+              <tr id="cart-group" onclick="javascript:location.href='/products/${ cart.productId }'">
                 <td>${ cart.id }</td>
                 <td colspan="3">${ cart.productName }</td>
                 <td>${ cart.quantity }</td>
