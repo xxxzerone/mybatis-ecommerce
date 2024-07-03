@@ -18,6 +18,12 @@
     #cart-group {
       cursor: pointer;
     } 
+    .bi-plus-square {
+      font-size: 26px;
+    }
+    .bi-dash-square {
+      font-size: 26px;
+    }
   </style>
 </head>
 <body>
@@ -29,32 +35,53 @@
         <div class="col-10 text-center">
           <table class="table table-striped">
             <tr>
+              <th>
+                <input type="checkbox" id="chkHead" class="form-check-input" checked>
+              </th>
               <th>상품 번호</th>
               <th colspan="3">상품명</th>
               <th>수량</th>
+              <th>가격</th>
               <th>등록일</th>
             </tr> 
 
             <c:forEach var="cart" items="${ carts }" varStatus="status">
-              <tr id="cart-group" onclick="javascript:location.href='/products/${ cart.productId }'">
+              <tr>
+                <td>
+                  <input type="checkbox" class="form-check-input chk">
+                </td>
                 <td>${ cart.id }</td>
-                <td colspan="3">${ cart.productName }</td>
-                <td>${ cart.quantity }</td>
+                <td colspan="3" id="cart-group" onclick="javascript:location.href='/products/${ cart.productId }'">
+                  ${ cart.productName }
+                </td>
+                <td>
+                  <i class="bi bi-dash-square" onclick="minusQuantity(${ cart.id }, ${ logIn.id }, ${ cart.quantity })"></i>
+                  ${ cart.quantity }
+                  <i class="bi bi-plus-square" onclick="plusQuantity(${ cart.id }, ${ logIn.id }, ${ cart.quantity }, ${ cart.stock })"></i>
+                </td>
+                <td>
+                  <div id="totalPrice">
+                    <span style="font-weight: bold;" data-value="${ cart.totalPrice }">
+                      <fmt:formatNumber value="${ cart.totalPrice }" type="number" />
+                    </span>
+                    <b>원</b>
+                  </div>
+                </td>
                 <td>
                   <fmt:timeZone value="Seoul">
-                    <fmt:parseDate value="${ cart.createdAt }" pattern="yyyy-MM-dd'T'HH:mm:ss" var="createdAt" type="both" />
+                    <fmt:parseDate value="${ cart.updatedAt }" pattern="yyyy-MM-dd'T'HH:mm:ss" var="updatedAt" type="both" />
                   </fmt:timeZone>
-                  <fmt:formatDate value="${ createdAt }" pattern="yy-MM-dd HH:mm" />
+                  <fmt:formatDate value="${ updatedAt }" pattern="yy-MM-dd HH:mm" />
                 </td>
               </tr>
             </c:forEach>
 
-            <c:set var="curPage" value="${ page.number + 1 }" />
+            <%-- <c:set var="curPage" value="${ page.number + 1 }" />
             <c:set var="maxPage" value="${ page.totalPages }" />
             <c:set var="startPage" value="${ page.startPage }" />
-            <c:set var="endPage" value="${ page.endPage }" />
+            <c:set var="endPage" value="${ page.endPage }" /> --%>
 
-            <tr>
+            <%-- <tr>
               <td colspan="6">
                 <ul class="pagination justify-content-center m-0">
                   <li class="page-item">
@@ -91,11 +118,118 @@
                   </li>
                 </ul>
               </td>
-            </tr>
+            </tr> --%>
           </table>
+          <div class="d-flex justify-content-end">
+            <p><b>총 가격</b></p>&nbsp;&nbsp;
+            <div>
+              <c:set var="cartTotalPrice" value="${ carts[0].cartTotalPrice }" />
+              <span id="cartTotPrice" style="font-weight: bold;" data-value="${ cartTotalPrice }">
+                <fmt:formatNumber value="${ cartTotalPrice }" type="number" />
+              </span>
+              <b>원</b>
+            </div>
+          </div>
         </div>
       </div>
     </div>
   </div>
+
+  <script>
+    const init = function() {
+      const checkboxes = document.querySelectorAll('.chk');
+      for (const checkbox of checkboxes) {
+        checkbox.checked = true;
+      }
+    };
+
+    window.onload = function() {
+      init();
+    };
+
+    const chkHead = document.querySelector('#chkHead');
+    chkHead.addEventListener('click', function() {
+      const isChecked = chkHead.checked;
+      const checkboxes = document.querySelectorAll('.chk');
+
+      if (isChecked) {
+        for (const checkbox of checkboxes) {
+          checkbox.checked = true;
+        }
+        $('#cartTotPrice').attr('data-value', ${ cartTotalPrice });
+        $('#cartTotPrice')[0].textContent = Number(${ cartTotalPrice }).toLocaleString('ko-KR');
+      } else {
+        for (const checkbox of checkboxes) {
+          checkbox.checked = false;
+        }
+        $('#cartTotPrice').attr('data-value', 0);
+        $('#cartTotPrice')[0].textContent = '0';
+      }
+    });
+
+    const checkboxes = document.querySelectorAll('.chk');
+    for (const checkbox of checkboxes) {
+      checkbox.addEventListener('click', function(event) {
+        const totalCnt = checkboxes.length;
+        const checkedCnt = document.querySelectorAll('.chk:checked').length;
+        if (totalCnt == checkedCnt) {
+          document.querySelector('#chkHead').checked = true;
+        } else {
+          document.querySelector('#chkHead').checked = false;
+        }
+
+        const row = $(event.target).closest('tr');
+        const columns = row.find('td');
+        const totalPrice = Number($(columns.find('span')[0]).attr('data-value'));
+
+        let cartTotalAmount = Number($('#cartTotPrice').attr('data-value'));
+        const isChecked = checkbox.checked;
+        if (isChecked) {
+          cartTotalAmount += totalPrice;
+        } else {
+          cartTotalAmount -= totalPrice;
+        }
+
+        $('#cartTotPrice').attr('data-value', cartTotalAmount);
+        $('#cartTotPrice')[0].textContent = cartTotalAmount.toLocaleString('ko-KR');
+       });
+    }
+
+    function plusQuantity(id, userId, quantity, stock) {
+      if (quantity >= stock) {
+        alert('수량이 최대입니다.');
+        return;
+      }
+
+      $.ajax({
+        url: '/carts/plus/quantity/' + id,
+        type: 'get',
+      }).done((res) => {
+        if (res.result === 'success') {
+          location.href = '/carts/' + userId;
+        }
+      }).fail((xhr, textStatus, errorThrown) => {
+        console.log(textStatus);
+      });
+    }
+
+    function minusQuantity(id, userId, quantity) {
+      if (quantity == 1) {
+        alert('수량은 최소 1개입니다.');
+        return;
+      }
+
+      $.ajax({
+        url: '/carts/minus/quantity/' + id,
+        type: 'get',
+      }).done((res) => {
+        if (res.result === 'success') {
+          location.href = '/carts/' + userId;
+        }
+      }).fail((xhr, textStatus, errorThrown) => {
+        console.log(textStatus);
+      });
+    }
+  </script>
 </body>
 </html>

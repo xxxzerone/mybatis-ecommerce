@@ -1,7 +1,9 @@
 package com.nc13.ecommerce.controller;
 
+import com.nc13.ecommerce.dto.FileDTO;
 import com.nc13.ecommerce.dto.PageableDTO;
 import com.nc13.ecommerce.dto.ProductDTO;
+import com.nc13.ecommerce.service.FileService;
 import com.nc13.ecommerce.service.ProductService;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
@@ -12,14 +14,15 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import java.io.File;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Controller
 @RequestMapping("/products")
@@ -29,24 +32,17 @@ public class ProductController {
     private static final Logger log = LoggerFactory.getLogger(ProductController.class);
 
     private final ProductService productService;
+    private final FileService fileService;
 
     @GetMapping
-    public String productsPage(Model model, @PageableDefault(size = 5) Pageable pageable) {
-        Page<ProductDTO> result = productService.findAll(pageable);
-        List<ProductDTO> products = new ArrayList<>();
-        for (ProductDTO product : result) {
-            products.add(ProductDTO.builder()
-                    .id(product.getId())
-                    .name(product.getName())
-                    .price(product.getPrice())
-                    .info(product.getInfo())
-                    .stock(product.getStock())
-                    .categoryId(product.getCategoryId())
-                    .createdAt(product.getCreatedAt())
-                    .updatedAt(product.getUpdatedAt())
-                    .categoryName(product.getCategoryName())
-                    .build());
-        }
+    public String productsPage(
+            Model model,
+            @PageableDefault(size = 5) Pageable pageable,
+            @RequestParam(value = "search", defaultValue = "") String search
+    ) {
+        Page<ProductDTO> result = productService.findAll(pageable, search);
+
+        List<ProductDTO> products = result.toList();
         PageableDTO page = PageableDTO.builder()
                 .totalPages(result.getTotalPages())
                 .totalElements(result.getTotalElements())
@@ -68,7 +64,11 @@ public class ProductController {
             return "redirect:/error-page";
         }
 
+        List<FileDTO> files = fileService.findByProductId(id);
+
+
         model.addAttribute("product", product);
+        model.addAttribute("files", files);
 
         return "product/productDetail";
     }
@@ -76,5 +76,29 @@ public class ProductController {
     @GetMapping("/create")
     public String createPage() {
         return "product/create";
+    }
+
+    @PostMapping("/create")
+    @ResponseBody
+    public Map<String, Object> create(
+            @RequestPart ProductDTO productDTO,
+            @RequestPart(required = false) List<MultipartFile> files
+    ) {
+        Map<String, Object> data = new HashMap<>();
+
+        int result = productService.insert(productDTO);
+        if (result != 1) {
+            data.put("result", "fail");
+            return data;
+        }
+
+        result = fileService.uploads(productDTO.getId(), files);
+        if (result != 1) {
+            data.put("result", "fail");
+            return data;
+        }
+
+        data.put("result", "success");
+        return data;
     }
 }

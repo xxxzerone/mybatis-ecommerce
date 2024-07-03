@@ -32,4 +32,12 @@ public class CartService {
     public int update(String userId, CartDTO cartDTO) {
         return cartRepository.update(userId, cartDTO);
     }
+
+    public int plusQuantityById(int id) {
+        return cartRepository.plusQuantityById(id);
+    }
+
+    public int minusQuantityById(int id) {
+        return cartRepository.minusQuantityById(id);
+    }
 }

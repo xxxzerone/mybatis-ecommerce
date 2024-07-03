@@ -58,20 +58,30 @@
             <td colspan="2">${ product.info }</td>
           </tr>
           <tr>
+            <th colspan="2" class="text-center">이미지</th>
+          </tr>
+          <tr>
+            <td colspan="2">
+              <c:forEach var="file" items="${ files }">
+                <img src='/uploads/${ file.fileName }.${ file.fileExt }' width='100' />
+              </c:forEach>
+            </td>
+          </tr>
+          <tr>
             <th>수량</th>
             <td>
-              <input type="number" class="w-25" name="quantity" id="quantity" min="1" max="${ product.stock }"> 
+              <input type="number" class="w-25" name="quantity" id="quantity" min="1" max="${ product.stock }" value="1"> 
               <button type="button" class="btn btn-outline-success" onclick="addCart()">장바구니 등록</button> 
             </td>
           </tr>
-          <c:if test="${ board.writerId eq logIn.id }">
+          <%-- <c:if test="${ board.writerId eq logIn.id }">
             <tr class="text-center">
               <td class="text-center" colspan="3">
                 <button type="button" class="btn btn-outline-success" onclick="javascript:location.href='/board/update/${ board.id }'">수정</button>
                 <button type="button" class="btn btn-outline-danger" onclick="remove(${ board.id })">삭제</button>
               </td>
             </tr> 
-          </c:if>
+          </c:if> --%>
           <tr class="text-center">
             <td class="text-center" colspan="3">
               <a href="/products" class="btn btn-outline-secondary">목록</a>
@@ -79,7 +89,7 @@
           </tr> 
         </table> 
 
-        <table class="table table-striped">
+        <%-- <table class="table table-striped">
           <tr class="text-center">
             <td colspan="6">댓글</td> 
           </tr> 
@@ -102,6 +112,7 @@
                         <fmt:formatDate value="${ modifyDate }" pattern="yy-MM-dd HH:mm" />
                       </span>
                     </td>
+
                     <td style="width: 25px;">
                       <input type="submit" class="btn btn-outline-primary" value="수정">
                     </td>
@@ -137,7 +148,7 @@
               </td>
             </form> 
           </tr>
-        </table>
+        </table> --%>
       </div> 
     </div>
   </div> 

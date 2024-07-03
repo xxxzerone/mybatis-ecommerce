@@ -56,7 +56,7 @@
         <div class="row justify-content-center">
           <div class="col-6">
             <label for="input_file">첨부파일</label> 
-            <input type="file" name="file" id="input_file" class="form-control" multiple>
+            <input type="file" name="files" id="input_file" class="form-control" accept="image/*" multiple>
           </div> 
         </div>
 
@@ -83,18 +83,38 @@
     });
 
     function create() {
-      const data = new FormData();
-      data.append('name', $('#input_name').val());
-      data.append('info', $('#input_info').val());
-      data.append('file', $('#input_file')[0]);
+      const name = $('#input_name').val();
+      const price = $('#input_price').val();
+      const stock = $('#input_stock').val();
+      const categoryId = $('#input_category option:selected').val();
+      const info = $('#input_info').val();
+      const productDTO = {
+        name,
+        price,
+        stock,
+        categoryId,
+        info
+      };
+      
+      const formData = new FormData();
+      formData.append("productDTO", new Blob([JSON.stringify(productDTO)], { type: 'application/json' }));
+
+      const files = $('#input_file')[0].files;
+      for (const file of files) {
+        formData.append("files", file);
+      }
 
       $.ajax({
-        url: '/board/write',
+        url: '/products/create',
         type: 'post',
-        data: data,
-        enctype: 'multipart/form-data',
-      }).done((data) => {
-        console.log(data);
+        data: formData,
+        contentType: false,
+        processData: false,
+        enctype: 'multipart/form-data'
+      }).done((res) => {
+        if (res.result === 'success') {
+          location.href = '/products';
+        }
       }).fail((xhr, textStatus, errorThrown) => {
         console.log(xhr, textStatus);
       });

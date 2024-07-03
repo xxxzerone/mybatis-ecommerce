@@ -1,10 +1,8 @@
 package com.nc13.ecommerce.repository;
 
 import com.nc13.ecommerce.dto.ProductDTO;
-import org.apache.ibatis.annotations.Mapper;
-import org.apache.ibatis.annotations.Param;
-import org.apache.ibatis.annotations.Result;
-import org.apache.ibatis.annotations.Select;
+import com.nc13.ecommerce.provider.ProductProvider;
+import org.apache.ibatis.annotations.*;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 
@@ -19,11 +17,22 @@ public interface ProductRepository {
     @Result(property = "categoryName", column = "category_name")
     List<ProductDTO> findAll(@Param("page") Pageable page);
 
+    @SelectProvider(type = ProductProvider.class, method = "findAll")
+    List<ProductDTO> findAllByPageAndSearch(@Param("page") Pageable page, String search);
+
     @Select("select count(*) from product")
     int count();
+
+    @SelectProvider(type = ProductProvider.class, method = "countBySearch")
+    int countBySearch(String search);
 
     @Select("select *, c.name as category_name from product p, category c " +
             "where p.category_id = c.id and p.id = #{id} order by p.id desc")
     @Result(property = "categoryName", column = "category_name")
     ProductDTO findById(int id);
+
+    @Insert("insert into product(name, price, info, stock, category_id) " +
+            "values(#{product.name}, #{product.price}, #{product.info}, #{product.stock}, #{product.categoryId})")
+    @Options(useGeneratedKeys = true, keyProperty = "id")
+    int insert(@Param("product") ProductDTO product);
 }

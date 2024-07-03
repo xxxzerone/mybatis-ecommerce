@@ -52,4 +52,32 @@ public class CartController {
 
         return "cart/cartList";
     }
+
+    @GetMapping("/plus/quantity/{id}")
+    @ResponseBody
+    public Map<String, Object> plusQuantity(@PathVariable int id) {
+        Map<String, Object> data = new HashMap<>();
+        int result = cartService.plusQuantityById(id);
+        if (result == 1) {
+            data.put("result", "success");
+        } else {
+            data.put("result", "fail");
+        }
+
+        return data;
+    }
+
+    @GetMapping("/minus/quantity/{id}")
+    @ResponseBody
+    public Map<String, Object> minusQuantity(@PathVariable int id) {
+        Map<String, Object> data = new HashMap<>();
+        int result = cartService.minusQuantityById(id);
+        if (result == 1) {
+            data.put("result", "success");
+        } else {
+            data.put("result", "fail");
+        }
+
+        return data;
+    }
 }

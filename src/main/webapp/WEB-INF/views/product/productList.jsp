@@ -26,6 +26,17 @@
     <div class="main h-100">
       <h1 class="text-center">상품 목록</h1>
 
+      <nav class="navbar navbar-expand-lg bg-body-tertiary">
+        <div class="container-fluid">
+          <div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <form action="/products" method="get" class="d-flex justify-content-end" role="search">
+              <input class="form-control me-2" type="search" name="search" id="input_search" placeholder="Search 상품명" aria-label="Search">
+              <button class="btn btn-outline-success" type="submit">Search</button>
+            </form>
+          </div>
+        </div>
+      </nav>
+
       <div class="row justify-content-center">
         <div class="col-10 text-center">
           <table class="table table-striped">
@@ -59,11 +70,11 @@
               <td colspan="6">
                 <ul class="pagination justify-content-center m-0">
                   <li class="page-item">
-                    <i class="page-link bi bi-chevron-double-left" onclick="javascript:location.href='/products?page=0'"></i>
+                    <i class="page-link bi bi-chevron-double-left" onclick="toFirstPage()"></i>
                   </li> 
                   <c:if test="${ curPage > 5 }">
                     <li class="page-item">
-                      <i class="page-link bi bi-chevron-left" onclick="javascript:location.href='/products?page=${ curPage - 6 }'"></i>
+                      <i class="page-link bi bi-chevron-left" onclick="toPrevPage(${ curPage - 6})"></i>
                     </li>
                   </c:if>
 
@@ -76,7 +87,7 @@
                       </c:when>
                       <c:otherwise>
                         <li class="page-item">
-                          <a class="page-link" href="/products?page=${ pageable - 1 }">${ pageable }</a>
+                          <span class="page-link" onclick="toClickPage(${ pageable - 1})">${ pageable }</span>
                         </li>
                       </c:otherwise>
                     </c:choose>
@@ -84,11 +95,11 @@
 
                   <c:if test="${ curPage < maxPage - 5 }">
                     <li class="page-item">
-                      <i class="page-link bi bi-chevron-right" onclick="javascript:location.href='/products?page=${ curPage + 4 }'"></i>
+                      <i class="page-link bi bi-chevron-right" onclick="toNextPage(${ curPage + 4 })"></i>
                     </li>
                   </c:if>
                   <li class="page-item">
-                    <i class="page-link bi bi-chevron-double-right" onclick="javascript:location.href='/products?page=${ maxPage - 1 }'"></i>
+                    <i class="page-link bi bi-chevron-double-right" onclick="toLastPage(${ maxPage - 1 })"></i>
                   </li>
                 </ul>
               </td>
@@ -108,5 +119,31 @@
       </div>
     </div>
   </div>
+
+  <script>
+    const url = new URL(window.location.href);
+    const urlParams = url.searchParams;
+    const search = urlParams.get('search') || '';
+
+    function toFirstPage() {
+      location.href = '/products?page=0&search=' + search;
+    } 
+
+    function toPrevPage(page) {
+      location.href = '/products?page=' + page + '&search=' + search;
+    }
+
+    function toClickPage(page) {
+      location.href = '/products?page=' + page + '&search=' + search;
+    }
+
+    function toNextPage(page) {
+      location.href = '/products?page=' + page + '&search=' + search;
+    }
+
+    function toLastPage(page) {
+      location.href = '/products?page=' + page + '&search=' + search;
+    }
+  </script>
 </body>
 </html>

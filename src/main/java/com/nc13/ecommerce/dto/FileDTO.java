@@ -11,18 +11,13 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class CartDTO {
+public class FileDTO {
 
     private Long id;
-    private Long userId;
+    private String fileName;
+    private String fileOriginName;
+    private String fileExt;
+    private long fileSize;
     private Long productId;
-    private int quantity;
-    private char status;
     private LocalDateTime createdAt;
-    private LocalDateTime updatedAt;
-    private String productName;
-    private int price;
-    private int stock;
-    private int totalPrice;
-    private int cartTotalPrice;
 }

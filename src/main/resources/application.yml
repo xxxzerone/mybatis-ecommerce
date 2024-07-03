@@ -13,6 +13,14 @@ spring:
     username: scott
     password: scott
 
+  servlet:
+    multipart:
+      max-file-size: 20MB
+      max-request-size: 25MB
+
+file:
+  upload-dir: src/main/resources/static/uploads
+
 server:
   servlet:
     jsp:
